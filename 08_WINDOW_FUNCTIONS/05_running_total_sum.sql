@@ -1,0 +1,13 @@
+﻿-- Laufende Summe (Running Total) mit SUM() OVER()
+
+WITH DailyRevenue AS (
+    SELECT CAST('2026-03-01' AS DATE) AS DayDate, 500 AS Revenue UNION ALL
+    SELECT '2026-03-02', 750 UNION ALL
+    SELECT '2026-03-03', 300 UNION ALL
+    SELECT '2026-03-04', 1200
+)
+SELECT 
+    DayDate,
+    Revenue,
+    SUM(Revenue) OVER (ORDER BY DayDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS RunningTotal
+FROM DailyRevenue;
