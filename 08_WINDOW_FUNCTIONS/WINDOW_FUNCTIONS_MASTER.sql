@@ -1,85 +1,135 @@
-﻿/*
-================================================================================
-MASTER-GUIDE: FENSTERFUNKTIONEN IN T-SQL (WINDOW FUNCTIONS MASTERCLASS)
-Alle 11 wichtigsten Fensterfunktionen an einem einzigen Datensatz:
-  1. ROW_NUMBER()
-  2. RANK()
-  3. DENSE_RANK()
-  4. NTILE()
-  5. LAG()
-  6. LEAD()
-  7. FIRST_VALUE()
-  8. LAST_VALUE()
-  9. SUM() OVER()
-  10. AVG() OVER()
-  11. COUNT() OVER()
-================================================================================
-*/
+-- =====================================================================================
+-- SQL ANALYST TOOLKIT | MODUL 08: WINDOW FUNCTIONS (FENSTERFUNKTIONEN)
+-- -------------------------------------------------------------------------------------
+-- Datenbank : SupermarktDWH (FrischMarkt GmbH)
+-- Ziel      : Beherrschung von ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTILE sowie
+--             gleitenden Fenstern (ROWS BETWEEN) anhand realistischer Filialdaten.
+-- =====================================================================================
 
-DROP TABLE IF EXISTS #EmployeePerformance;
+USE SupermarktDWH;
+GO
 
-CREATE TABLE #EmployeePerformance (
-    EmpID INT,
-    EmpName VARCHAR(50),
-    Department VARCHAR(50),
-    Region VARCHAR(20),
-    HireDate DATE,
-    Salary DECIMAL(10,2),
-    SalesCount INT
-);
-
-INSERT INTO #EmployeePerformance VALUES
-(1, 'Klaus Müller',    'Sales', 'Nord', '2020-03-15', 65000, 120),
-(2, 'Sarah Wagner',    'Sales', 'Nord', '2021-06-01', 72000, 150),
-(3, 'Michael Koch',    'Sales', 'Süd',  '2019-11-10', 72000, 140),
-(4, 'Julia Bauer',     'Sales', 'Süd',  '2022-01-15', 58000, 95),
-(5, 'David Becker',    'IT',    'Nord', '2018-05-20', 85000, 10),
-(6, 'Elena Schulz',    'IT',    'Nord', '2020-09-01', 90000, 15),
-(7, 'Markus Braun',    'IT',    'Süd',  '2019-02-14', 82000, 8),
-(8, 'Laura Hoffmann',  'HR',    'Nord', '2021-04-10', 50000, 5),
-(9, 'Tobias Richter',  'HR',    'Süd',  '2022-08-22', 48000, 4);
-
--- 1. RANGFOLGE-FUNKTIONEN (Ranking Functions: ROW_NUMBER, RANK, DENSE_RANK, NTILE)
+-- =====================================================================================
+-- 1. BUSINESS CASE: Die 3 umsatzstärksten Artikel je Warengruppe (DENSE_RANK)
+-- -------------------------------------------------------------------------------------
+-- Frage des Category Managers:
+-- "Welche 3 Top-Seller treiben in jeder einzelnen Warengruppe den Umsatz an?"
+-- =====================================================================================
+WITH KategorieUmsatz AS (
+    SELECT 
+        k.KategorieName,
+        p.ProduktName,
+        SUM(f.Menge) AS VerkaufteMenge,
+        CAST(SUM(f.UmsatzBrutto) AS DECIMAL(12,2)) AS BruttoUmsatzEUR,
+        CAST(SUM(f.Deckungsbeitrag) AS DECIMAL(12,2)) AS RohertragEUR,
+        -- DENSE_RANK vergibt lückenlose Ränge bei gleichem Umsatz
+        DENSE_RANK() OVER (
+            PARTITION BY k.KategorieID 
+            ORDER BY SUM(f.UmsatzBrutto) DESC
+        ) AS RangInKategorie
+    FROM dwh.fct_verkaeufe f
+    JOIN dbo.Produkte p ON p.ProduktID = f.ProduktID
+    JOIN dbo.Kategorien k ON k.KategorieID = p.KategorieID
+    GROUP BY k.KategorieID, k.KategorieName, p.ProduktName
+)
 SELECT 
-    EmpName,
-    Department,
-    Salary,
-    ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS RowNum_In_Dept,
-    RANK()       OVER (PARTITION BY Department ORDER BY Salary DESC) AS Rank_In_Dept,
-    DENSE_RANK() OVER (PARTITION BY Department ORDER BY Salary DESC) AS DenseRank_In_Dept,
-    NTILE(2)     OVER (PARTITION BY Department ORDER BY Salary DESC) AS SalaryQuartile
-FROM #EmployeePerformance;
+    KategorieName,
+    RangInKategorie,
+    ProduktName,
+    VerkaufteMenge,
+    BruttoUmsatzEUR,
+    RohertragEUR
+FROM KategorieUmsatz
+WHERE RangInKategorie <= 3
+ORDER BY KategorieName, RangInKategorie;
+GO
 
--- 2. WERTE-FUNKTIONEN (Value Functions: LAG, LEAD, FIRST_VALUE, LAST_VALUE)
+-- =====================================================================================
+-- 2. BUSINESS CASE: Month-over-Month (MoM) Umsatzwachstum mit LAG()
+-- -------------------------------------------------------------------------------------
+-- Frage der Geschäftsführung:
+-- "Wie entwickelt sich der monatliche Gesamtumsatz im Vergleich zum Vormonat und
+--  in welchen Monaten gab es signifikante Einbrüche oder Spitzen?"
+-- =====================================================================================
+WITH Monatsumsatz AS (
+    SELECT 
+        d.Jahr,
+        d.MonatNr,
+        d.JahrMonat,
+        d.MonatName,
+        CAST(SUM(f.UmsatzBrutto) AS DECIMAL(12,2)) AS UmsatzAktuell
+    FROM dwh.fct_verkaeufe f
+    JOIN dwh.dim_datum d ON d.DatumKey = f.DatumKey
+    GROUP BY d.Jahr, d.MonatNr, d.JahrMonat, d.MonatName
+),
+WachstumsVergleich AS (
+    SELECT 
+        JahrMonat,
+        MonatName,
+        UmsatzAktuell,
+        -- LAG(..., 1) liest den Umsatz des vorherigen Monats aus
+        LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat) AS UmsatzVormonat,
+        UmsatzAktuell - LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat) AS AbsoluteAenderungEUR,
+        CAST(
+            (UmsatzAktuell - LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat)) * 100.0 / 
+            NULLIF(LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat), 0) 
+            AS DECIMAL(5,2)
+        ) AS MoM_Wachstum_Pct
+    FROM Monatsumsatz
+)
 SELECT 
-    EmpName,
-    Department,
-    HireDate,
-    Salary,
-    LAG(Salary, 1, 0) OVER (PARTITION BY Department ORDER BY HireDate) AS PrevHiredSalary,
-    LEAD(Salary, 1, 0) OVER (PARTITION BY Department ORDER BY HireDate) AS NextHiredSalary,
-    FIRST_VALUE(EmpName) OVER (PARTITION BY Department ORDER BY Salary DESC) AS TopEarnerInDept,
-    -- WICHTIG: LAST_VALUE benötigt expliziten Fensterrahmen (ROWS BETWEEN ... AND UNBOUNDED FOLLOWING)
-    LAST_VALUE(EmpName) OVER (
-        PARTITION BY Department 
-        ORDER BY Salary DESC 
-        ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
-    ) AS LowestEarnerInDept
-FROM #EmployeePerformance;
+    JahrMonat,
+    MonatName,
+    UmsatzAktuell,
+    UmsatzVormonat,
+    AbsoluteAenderungEUR,
+    MoM_Wachstum_Pct,
+    CASE 
+        WHEN MoM_Wachstum_Pct >= 5.0 THEN N'▲ Starkes Wachstum (> +5%)'
+        WHEN MoM_Wachstum_Pct <= -5.0 THEN N'▼ Deutlicher Rückgang (< -5%)'
+        ELSE N'► Stabile Entwicklung (±5%)'
+    END AS PerformanceTrend
+FROM WachstumsVergleich
+ORDER BY JahrMonat;
+GO
 
--- 3. AGGREGATIONEN MIT FENSTERRAHMEN (SUM, AVG, COUNT OVER)
+-- =====================================================================================
+-- 3. BUSINESS CASE: Gleitender 7-Tage-Durchschnitt zur Glättung von Wochentagseffekten
+-- -------------------------------------------------------------------------------------
+-- Frage des Filialleiters (Standort Hannover-Mitte):
+-- "Da Samstage 40% mehr Umsatz machen als Montage, brauche ich eine geglättete
+--  Trendlinie (Rolling 7-Day Average) für die Personal- und Frischeplanung."
+-- =====================================================================================
+WITH Tagesumsatz AS (
+    SELECT 
+        d.Datum,
+        d.WochentagKurz,
+        CAST(SUM(f.UmsatzBrutto) AS DECIMAL(10,2)) AS TagesUmsatzEUR
+    FROM dwh.fct_verkaeufe f
+    JOIN dwh.dim_datum d ON d.DatumKey = f.DatumKey
+    WHERE f.FilialeID = 1 -- Hannover-Mitte
+      AND d.Datum BETWEEN '2026-06-01' AND '2026-08-31'
+    GROUP BY d.Datum, d.WochentagKurz
+)
 SELECT 
-    EmpName,
-    Department,
-    Salary,
-    COUNT(*)    OVER (PARTITION BY Department) AS TotalEmployeesInDept,
-    SUM(Salary) OVER (PARTITION BY Department) AS TotalDeptSalary,
-    ROUND(Salary * 100.0 / SUM(Salary) OVER (PARTITION BY Department), 2) AS PctOfDeptSalary,
-    AVG(Salary) OVER (PARTITION BY Department) AS AvgDeptSalary,
-    -- Gleitender Durchschnitt (Moving Average über 3 Zeilen)
-    AVG(Salary) OVER (
-        PARTITION BY Department 
-        ORDER BY HireDate 
-        ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
-    ) AS MovingAvgSalary_3Rows
-FROM #EmployeePerformance;
+    Datum,
+    WochentagKurz,
+    TagesUmsatzEUR,
+    -- ROWS BETWEEN 6 PRECEDING AND CURRENT ROW: Schiebefenster über 7 aufeinanderfolgende Tage
+    CAST(
+        AVG(TagesUmsatzEUR) OVER (
+            ORDER BY Datum 
+            ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+        ) AS DECIMAL(10,2)
+    ) AS GleitenderSchnitt_7Tage,
+    -- Kumulierter Monatsumsatz (Running Total innerhalb des jeweiligen Monats)
+    CAST(
+        SUM(TagesUmsatzEUR) OVER (
+            PARTITION BY YEAR(Datum), MONTH(Datum)
+            ORDER BY Datum 
+            ROWS UNBOUNDED PRECEDING
+        ) AS DECIMAL(12,2)
+    ) AS RunningTotal_Monat
+FROM Tagesumsatz
+ORDER BY Datum;
+GO
