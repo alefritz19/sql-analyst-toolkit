@@ -11,33 +11,63 @@
 
 ## 📌 Übersicht: Wofür dieses Repository steht
 
-Dieses Repository ist **keine lose Ansammlung theoretischer Syntax-Snippets**, sondern ein **zusammenhängendes technisches Werkzeug für angehende und gestandene Data Analysts & BI Developers**. 
+Dieses Repository ist **keine lose Ansammlung theoretischer Syntax-Snippets**, sondern ein **zusammenhängendes technisches Werkzeug für Business Intelligence & Data Analytics**. 
 
-Alle Abfragen und Module basieren auf einer gemeinsamen, realistischen Datenbank: der **FrischMarkt GmbH (`SupermarktDWH`)**. Vom ersten `SELECT` über komplexe Fensterfunktionen bis hin zur monatlichen Kohortenanalyse und Datenbereinigung wird eine konsistente geschäftliche Geschichte erzählt.
+Alle Kernmodule basieren auf einer gemeinsamen, realistischen Unternehmensdatenbank: der **FrischMarkt GmbH (`SupermarktDWH`)**. Vom deterministischen Setup über Datenbereinigung bis hin zu komplexen Fensterfunktionen und Kundenwert-Modellen (RFM & Kohorten) wird eine konsistente geschäftliche Geschichte erzählt.
 
 ---
 
 ## 🎯 Struktur der Kernmodule
 
-### 1. Datenbereinigung & Qualitätssicherung (`14_DATA_CLEANING`)
-* **[`DATA_CLEANING_MASTER.sql`](14_DATA_CLEANING/DATA_CLEANING_MASTER.sql):**
+```text
+sql-analyst-toolkit/
+├── 00_SETUP/                                          # Deterministischer DWH-Datengenerator
+├── 01_DATA_CLEANING/                                  # Datenbereinigung, Auditierung & Deduplizierung
+├── 02_WINDOW_FUNCTIONS/                               # Fensterfunktionen: DENSE_RANK, LAG, Moving Averages
+├── 03_BUSINESS_ANALYTICS_RFM/                         # RFM-Segmentierung & Monatliche Kohorten-Retention
+└── 90_TSQL_Syntax_Reference/                          # Umfassende Syntax-Bibliothek (CTEs, PIVOT, JSON etc.)
+```
+
+---
+
+### 1. Datenbereinigung & Qualitätssicherung (`01_DATA_CLEANING`)
+* **[`DATA_CLEANING_MASTER.sql`](01_DATA_CLEANING/DATA_CLEANING_MASTER.sql):**
   * Whitespace-Bereinigung (`TRIM`, verschachtelte `REPLACE`).
   * Sichere Datumskonvertierung via `TRY_CONVERT` (Harmonisierung von ISO-, DE- und US-Formaten).
-  * Syntaktische Prüfung von E-Mail-Adressen.
-  * In-Flight-Deduplizierung über `ROW_NUMBER() PARTITION BY ... ORDER BY ID DESC`.
+  * Syntaktische Prüfung und Korrektur von E-Mail-Adressen.
+  * In-Flight-Deduplizierung über `ROW_NUMBER() PARTITION BY SaubererKundenCode ORDER BY RohID DESC`.
 
-### 2. Fortgeschrittene Fensterfunktionen (`08_WINDOW_FUNCTIONS`)
-* **[`WINDOW_FUNCTIONS_MASTER.sql`](08_WINDOW_FUNCTIONS/WINDOW_FUNCTIONS_MASTER.sql):**
-  * `DENSE_RANK() OVER (PARTITION BY Kategorie ORDER BY Umsatz DESC)` für Top-Seller je Sortiment.
-  * `LAG(Umsatz, 1) OVER (ORDER BY JahrMonat)` zur Berechnung des Month-over-Month (MoM) Wachstums in Euro und Prozent.
+---
+
+### 2. Fortgeschrittene Fensterfunktionen (`02_WINDOW_FUNCTIONS`)
+* **[`WINDOW_FUNCTIONS_MASTER.sql`](02_WINDOW_FUNCTIONS/WINDOW_FUNCTIONS_MASTER.sql):**
+  * `DENSE_RANK() OVER (PARTITION BY KategorieID ORDER BY Umsatz DESC)` für Top-Seller je Sortiment.
+  * `LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat)` zur Berechnung des Month-over-Month (MoM) Wachstums in Euro und Prozent.
   * Gleitender 7-Tage-Durchschnitt (`AVG() OVER (ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`) zur Glättung starker Wochentagsschwankungen (Samstagsspitzen).
   * Monats-Running-Total (`SUM() OVER (PARTITION BY Monat ORDER BY Datum)`).
 
-### 3. Business Analytics, Retention & RFM (`15_ANALYTICS`)
-* **[`ADVANCED_ANALYTICS_MASTER.sql`](15_ANALYTICS/ADVANCED_ANALYTICS_MASTER.sql):**
+---
+
+### 3. Business Analytics, Retention & RFM (`03_BUSINESS_ANALYTICS_RFM`)
+* **[`ADVANCED_ANALYTICS_MASTER.sql`](03_BUSINESS_ANALYTICS_RFM/ADVANCED_ANALYTICS_MASTER.sql):**
   * **RFM-Kundensegmentierung:** Quantil-Einteilung über `NTILE(5)` für Recency (Tage seit Kauf), Frequency (Einkaufszahl) und Monetary (Gesamtumsatz) in *Champions*, *Loyale Kunden*, *Gefährdete Kunden* und *Inaktive*.
   * **Monatliche Kohortenanalyse (Retention Matrix):** Dynamische Ermittlung des Ersteinkaufs-Monats und Berechnung der Wiederkehrrate für Folgemonate M+1, M+2, M+3, M+6.
-  * **Pareto-Sortimentsanalyse (80/20):** Ermittlung des kumulierten Rohertragsbeitrags.
+
+#### 📊 Beispiel-Output: RFM-Kundensegmentierung (`SupermarktDWH`)
+
+Die folgende Auswertung zeigt das tatsächliche Ergebnis der RFM-Segmentierung über den 3-Jahres-Bestand:
+
+| RFM_Segment | Kunden_Anzahl | Anteil_Kunden (%) | Gesamtumsatz (€) | Ø_Bonwert (€) | Ø_Kauffrequenz |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **01_Champions** | 760 | 26,5 % | 630.241,88 € | 14,05 € | 59,7 |
+| **02_Loyal_Customers** | 560 | 19,6 % | 187.397,18 € | 13,91 € | 24,4 |
+| **03_Potential_Loyalists** | 205 | 7,2 % | 12.468,29 € | 14,74 € | 4,2 |
+| **04_At_Risk_Customers** | 137 | 4,8 % | 58.907,05 € | 13,38 € | 32,0 |
+| **05_Inactive_Lost** | 749 | 26,2 % | 37.333,60 € | 13,62 € | 3,6 |
+| **06_Promising_Average** | 452 | 15,8 % | 46.228,51 € | 13,61 € | 7,6 |
+
+> **Analytische Erkenntnis:**  
+> Die Segmente *01_Champions* und *02_Loyal_Customers* repräsentieren zusammen **46,1 % der aktiven Kundenkartenbesitzer**, erwirtschaften jedoch **86,3 % des gesamten kartenbasierten Umsatzes**. Umgekehrt binden die 749 abgewanderten Kunden (*05_Inactive_Lost*) Potenzial, das durch zielgerichtete Reaktivierungs-Kampagnen (Gutscheine auf Lieblingskategorien) adressiert werden kann.
 
 ---
 
@@ -49,18 +79,9 @@ Im Verzeichnis `00_SETUP` liegt der vollständige, deterministische Datengenerat
 sqlcmd -S .\SQLEXPRESS -E -i 00_SETUP\01_SupermarktDWH_erstellen.sql
 ```
 
-Nach wenigen Augenblicken steht die Datenbank `SupermarktDWH` bereit mit:
+Nach rund 2 Minuten steht die Datenbank `SupermarktDWH` bereit mit:
 * 5 Filialen (Hannover-Mitte, Hannover-List, Braunschweig, Hildesheim, Bielefeld)
 * 120 Artikeln in 8 Warengruppen
 * 3.000 Kundenkarten
 * Über 185.000 Kassenbons und 750.000 Positionen
 * Staging-Tabelle `stg.Kunden_Rohimport` für Data-Cleaning-Übungen
-
----
-
-## 💼 Demonstration für Fachgespräche & Interviews
-
-Das Repository belegt fundierte Kenntnisse in:
-* **Analytischem T-SQL:** Souveräner Umgang mit CTEs, Subqueries, bedingter Aggregation und Fensterfunktionen.
-* **Datenqualitäts-Management:** Strukturierte Identifikation von Inkonsistenzen und Deduplizierung.
-* **Verbindung zur Fachabteilung:** Übersetzung abstrakter Management-Fragen ("Welche Kunden wandern ab?", "Wie stark glättet ein 7-Tage-Schnitt das Wochenende?") in performanten SQL-Code.
