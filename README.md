@@ -76,7 +76,7 @@ Die folgende Auswertung zeigt das tatsächliche Ergebnis der RFM-Segmentierung �
 Im Verzeichnis `00_SETUP` liegt der vollständige, deterministische Datengenerator:
 
 ```powershell
-sqlcmd -S .\SQLEXPRESS -E -i 00_SETUP\01_SupermarktDWH_erstellen.sql
+sqlcmd -S .\SQLEXPRESS -E -f 65001 -i 00_SETUP\01_SupermarktDWH_erstellen.sql
 ```
 
 Nach rund 2 Minuten steht die Datenbank `SupermarktDWH` bereit mit:
