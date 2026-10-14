@@ -1,4 +1,4 @@
-﻿-- 03_JOINS / 01_all_joins.sql - Alle JOIN-Typen im Überblick
+-- 03_JOINS / 01_all_joins.sql - Alle JOIN-Typen im Überblick
 
 -- Testdaten
 DROP TABLE IF EXISTS #Customers;
@@ -18,7 +18,7 @@ INSERT INTO #Orders VALUES
 (103, 2, 850.00),
 (104, 4, 120.00); -- Kunde existiert nicht in #Customers
 
--- 1. INNER JOIN (Nur Übereinstimmungen
+-- 1. INNER JOIN (Nur Übereinstimmungen)
 SELECT
     c.CustomerID,
     c.CustomerName,
@@ -27,7 +27,7 @@ SELECT
 FROM #Customers c
 INNER JOIN #Orders o ON c.CustomerID = o.CustomerID;
 
--- 2. LEFT JOIN (Alle Kunden + vorhandene Aufträge
+-- 2. LEFT JOIN (Alle Kunden + vorhandene Aufträge)
 SELECT
     c.CustomerID,
     c.CustomerName,
@@ -36,7 +36,7 @@ SELECT
 FROM #Customers c
 LEFT JOIN #Orders o ON c.CustomerID = o.CustomerID;
 
--- 3. RIGHT JOIN (Alle Aufträge + vorhandene Kunden
+-- 3. RIGHT JOIN (Alle Aufträge + vorhandene Kunden)
 SELECT
     c.CustomerName,
     o.OrderID,
@@ -44,7 +44,7 @@ SELECT
 FROM #Customers c
 RIGHT JOIN #Orders o ON c.CustomerID = o.CustomerID;
 
--- 4. FULL OUTER JOIN (Alle Kunden und alle Aufträge
+-- 4. FULL OUTER JOIN (Alle Kunden und alle Aufträge)
 SELECT
     c.CustomerID AS Cust_ID,
     c.CustomerName,

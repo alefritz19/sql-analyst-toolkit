@@ -156,6 +156,14 @@ Aktivieren Sie im Menü 'Abfrage' den 'SQLCMD-Modus', um einzelne Skripte
 :r .\25_KNIME_SQL\03_in_database_pushdown_optimization.sql
 :r .\25_KNIME_SQL\04_chunked_data_export_pattern.sql
 
+-- 26_ADVENTUREWORKS_PROJECTS
+:r .\26_ADVENTUREWORKS_PROJECTS\01_sales_dashboard.sql
+:r .\26_ADVENTUREWORKS_PROJECTS\02_customer_segmentation.sql
+:r .\26_ADVENTUREWORKS_PROJECTS\03_product_analysis.sql
+:r .\26_ADVENTUREWORKS_PROJECTS\04_customer_retention.sql
+:r .\26_ADVENTUREWORKS_PROJECTS\05_profitability_analysis.sql
+:r .\26_ADVENTUREWORKS_PROJECTS\06_monthly_kpis.sql
+
 -- 99_INTERVIEW_TASKS
 :r .\99_INTERVIEW_TASKS\top_10_sql_questions.sql
 :r .\99_INTERVIEW_TASKS\window_function_tasks.sql

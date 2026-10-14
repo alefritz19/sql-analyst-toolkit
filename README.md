@@ -6,8 +6,8 @@
 [![KNIME](https://img.shields.io/badge/KNIME-In--Database%20Processing-FDD835?logo=knime&logoColor=black)](https://www.knime.com/)
 [![T-SQL](https://img.shields.io/badge/Sprache-T--SQL-blue)](https://learn.microsoft.com/sql/t-sql/)
 [![Offline Ready](https://img.shields.io/badge/Offline-100%25%20Lauffähig-success)](#)
-[![Skripte](https://img.shields.io/badge/Skripte-115%2B%20Dateien-orange)](#)
-[![Kategorien](https://img.shields.io/badge/Kategorien-25%20Module-purple)](#)
+[![Skripte](https://img.shields.io/badge/Skripte-120%2B%20Dateien-orange)](#)
+[![Kategorien](https://img.shields.io/badge/Kategorien-26%20Module-purple)](#)
 
 A practical collection of production-grade T-SQL examples, interview tasks, analytical queries, business cases, DWH modeling patterns, and cloud analytics architectures for:
 * **Data Analysts**
@@ -18,7 +18,7 @@ Alle Skripte sind vollständig autonom mit eigenen Testdaten lauffähig, didakti
 
 ---
 
-## 📌 Themenübersicht (25 Kategorien)
+## 📌 Themenübersicht (26 Kategorien)
 
 1. **SQL Fundamentals** (`01_SELECT`) — SELECT, DISTINCT, Berechnungen, Spaltenaliase
 2. **WHERE Filters** (`02_WHERE_FILTERS`) — Vergleichsoperatoren, LIKE-Muster, BETWEEN, IN, NULL-Logik
@@ -45,7 +45,8 @@ Alle Skripte sind vollständig autonom mit eigenen Testdaten lauffähig, didakti
 23. **Microsoft Fabric SQL** (`23_FABRIC_SQL`) — Fabric Lakehouse SQL Endpoint, OPENROWSET für Delta Parquet, Synapse Data Warehouse, OneLake Cross-Database Queries
 24. **Azure SQL** (`24_AZURE_SQL`) — Row-Level Security (RLS), Dynamic Data Masking (DSGVO), Temporale Tabellen, Elastic Queries
 25. **KNIME SQL** (`25_KNIME_SQL`) — In-Database Processing (Pushdown), DB Query Reader Patterns, Flow Variables Injection, Chunked Data Export
-26. **Interview Tasks** (`99_INTERVIEW_TASKS`) — Top-10-Cheatsheets, Ranking, Window Functions, Joins, CTE-Hierarchien
+26. **AdventureWorks Projects** (`26_ADVENTUREWORKS_PROJECTS`) — 6 End-to-End Business Cases: Sales Dashboard, RFM-Kundensegmentierung, ABC/Pareto-Sortiment, Kohorten-Retention, Deckungsbeitragsmarge, Monatliche KPI-Suite
+27. **Interview Tasks** (`99_INTERVIEW_TASKS`) — Top-10-Cheatsheets, Ranking, Window Functions, Joins, CTE-Hierarchien
 
 ---
 
@@ -113,6 +114,7 @@ sql-analyst-toolkit/
 ├── 23_FABRIC_SQL/          # 01_fabric_lakehouse_endpoint.sql, 02_openrowset_delta_parquet.sql, 03_synapse_warehouse_t_sql.sql, 04_cross_database_queries_onelake.sql
 ├── 24_AZURE_SQL/           # 01_row_level_security_rls.sql, 02_dynamic_data_masking.sql, 03_temporal_system_versioned_tables.sql, 04_external_tables_elastic_queries.sql
 ├── 25_KNIME_SQL/           # 01_knime_db_query_reader_pattern.sql, 02_knime_flow_variables_injection.sql, 03_in_database_pushdown_optimization.sql, 04_chunked_data_export_pattern.sql
+├── 26_ADVENTUREWORKS_PROJECTS/ # README.md, 01_sales_dashboard.sql, 02_customer_segmentation.sql, 03_product_analysis.sql, 04_customer_retention.sql, 05_profitability_analysis.sql, 06_monthly_kpis.sql
 ├── 99_INTERVIEW_TASKS/     # top_10_sql_questions.sql, window_function_tasks.sql, ranking_tasks.sql, joins_tasks.sql, cte_tasks.sql, 01_second_highest_salary.sql, 02_duplicates.sql, 03_consecutive_active_days.sql, 04_department_top_earners.sql, 05_cumulative_market_share.sql
 └── sample-datasets/        # README.md, restore_adventureworks.sql, restore_wideworldimporters.sql
 ```
