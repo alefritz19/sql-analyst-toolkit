@@ -1,5 +1,5 @@
 -- =====================================================================================
--- SQL ANALYST TOOLKIT | MODUL 14: DATA CLEANING & QUALITY AUDITING
+-- SQL ANALYST TOOLKIT | MODUL 01: DATA CLEANING & QUALITY AUDITING
 -- -------------------------------------------------------------------------------------
 -- Datenbank : SupermarktDWH (FrischMarkt GmbH)
 -- Tabelle   : stg.Kunden_Rohimport
@@ -46,9 +46,10 @@ WITH Bereinigt AS (
             TRY_CONVERT(DATE, GeburtsdatumTxt, 101)   -- 12/31/1990 (US)
         ) AS SauberesGeburtsdatum,
         
-        -- 4. Trennung von PLZ und Stadt
+        -- 4. Trennung von PLZ und Stadt (immer auf dem getrimmten Wert arbeiten,
+        --    sonst verschiebt ein führendes Leerzeichen die Startposition des Stadtnamens)
         LEFT(LTRIM(StadtPLZ), 5) AS SauberePLZ,
-        LTRIM(SUBSTRING(StadtPLZ, 7, 50)) AS SaubereStadt,
+        LTRIM(SUBSTRING(LTRIM(StadtPLZ), 7, 50)) AS SaubereStadt,
         
         -- 5. E-Mail-Validierung: Syntaxfehler (wie doppeltes @@) korrigieren
         LOWER(LTRIM(RTRIM(REPLACE(EmailAdresse, '@@', '@')))) AS SaubereEmail

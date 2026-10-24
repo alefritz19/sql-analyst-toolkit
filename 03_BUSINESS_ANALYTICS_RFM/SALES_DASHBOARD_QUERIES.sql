@@ -1,7 +1,8 @@
 ﻿/*
 ================================================================================
-KPI QUERIES FÜR MANAGEMENT SALES-DASHBOARDS
-Zentrale Kennzahlen: Total Revenue, MoM, YoY, AOV, Top Categories
+KPI-ABFRAGE FÜR MANAGEMENT-DASHBOARDS
+Kennzahlen dieser Datei: Gesamtumsatz, Gesamtkosten, Rohertrag, Marge %, Ø Bestellwert
+(MoM/YoY siehe 03_monthly_revenue.sql, ABC/Top-Kategorien siehe ABC_ANALYSIS.sql)
 ================================================================================
 */
 

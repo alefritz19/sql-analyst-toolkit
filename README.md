@@ -57,17 +57,19 @@ sql-analyst-toolkit/
 
 Die folgende Auswertung zeigt das tatsächliche Ergebnis der RFM-Segmentierung über den 3-Jahres-Bestand:
 
-| RFM_Segment | Kunden_Anzahl | Anteil_Kunden (%) | Gesamtumsatz (€) | Ø_Bonwert (€) | Ø_Kauffrequenz |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **01_Champions** | 760 | 26,5 % | 630.241,88 € | 14,05 € | 59,7 |
-| **02_Loyal_Customers** | 560 | 19,6 % | 187.397,18 € | 13,91 € | 24,4 |
-| **03_Potential_Loyalists** | 205 | 7,2 % | 12.468,29 € | 14,74 € | 4,2 |
-| **04_At_Risk_Customers** | 137 | 4,8 % | 58.907,05 € | 13,38 € | 32,0 |
-| **05_Inactive_Lost** | 749 | 26,2 % | 37.333,60 € | 13,62 € | 3,6 |
-| **06_Promising_Average** | 452 | 15,8 % | 46.228,51 € | 13,61 € | 7,6 |
+| RFM-Segment (Ausgabe des Skripts) | Kunden | Anteil Kunden | Gesamtumsatz | Ø Bonwert | Ø Bons je Kunde |
+| :--- | :---: | :---: | ---: | ---: | :---: |
+| **Champions (Top-Stammkunden)** | 760 | 26,5 % | 630.241,88 € | 13,89 € | 59,7 |
+| **Loyale Kunden (Regelmäßig)** | 560 | 19,6 % | 187.397,18 € | 13,71 € | 24,4 |
+| **Gefährdete Stammkunden** | 137 | 4,8 % | 58.907,05 € | 13,43 € | 32,0 |
+| **Durchschnittskunden** | 452 | 15,8 % | 46.228,51 € | 13,51 € | 7,6 |
+| **Inaktive / Verlorene Kunden** | 749 | 26,2 % | 37.333,60 € | 13,70 € | 3,6 |
+| **Neukunden / Potenzial** | 205 | 7,2 % | 12.468,29 € | 14,57 € | 4,2 |
+
+*Grundgesamtheit: 2.863 Kundenkarten mit mindestens einem Einkauf (von 3.000 ausgegebenen Karten). Ø Bonwert = Gesamtumsatz / Anzahl Bons des Segments.*
 
 > **Analytische Erkenntnis:**  
-> Die Segmente *01_Champions* und *02_Loyal_Customers* repräsentieren zusammen **46,1 % der aktiven Kundenkartenbesitzer**, erwirtschaften jedoch **86,3 % des gesamten kartenbasierten Umsatzes**. Umgekehrt binden die 749 abgewanderten Kunden (*05_Inactive_Lost*) Potenzial, das durch zielgerichtete Reaktivierungs-Kampagnen (Gutscheine auf Lieblingskategorien) adressiert werden kann.
+> Die Segmente *Champions* und *Loyale Kunden* stellen zusammen **46,1 % der aktiven Kundenkartenbesitzer**, erwirtschaften jedoch **84,1 % des gesamten kartenbasierten Umsatzes** (817.639 € von 972.577 €). Umgekehrt binden die 749 abgewanderten Kunden (*Inaktive / Verlorene Kunden*) Potenzial, das durch zielgerichtete Reaktivierungs-Kampagnen (Gutscheine auf Lieblingskategorien) adressiert werden kann.
 
 ---
 
@@ -83,5 +85,5 @@ Nach rund 2 Minuten steht die Datenbank `SupermarktDWH` bereit mit:
 * 5 Filialen (Hannover-Mitte, Hannover-List, Braunschweig, Hildesheim, Bielefeld)
 * 120 Artikeln in 8 Warengruppen
 * 3.000 Kundenkarten
-* Über 185.000 Kassenbons und 750.000 Positionen
-* Staging-Tabelle `stg.Kunden_Rohimport` für Data-Cleaning-Übungen
+* 185.418 Kassenbons und 754.690 Positionen
+* Staging-Tabelle `stg.Kunden_Rohimport` (9.000 Zeilen mit Dubletten und Formatfehlern) für Data-Cleaning-Übungen

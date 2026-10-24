@@ -1,5 +1,5 @@
 -- =====================================================================================
--- SQL ANALYST TOOLKIT | MODUL 08: WINDOW FUNCTIONS (FENSTERFUNKTIONEN)
+-- SQL ANALYST TOOLKIT | MODUL 02: WINDOW FUNCTIONS (FENSTERFUNKTIONEN)
 -- -------------------------------------------------------------------------------------
 -- Datenbank : SupermarktDWH (FrischMarkt GmbH)
 -- Ziel      : Beherrschung von ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTILE sowie
@@ -97,7 +97,7 @@ GO
 -- 3. BUSINESS CASE: Gleitender 7-Tage-Durchschnitt zur Glättung von Wochentagseffekten
 -- -------------------------------------------------------------------------------------
 -- Frage des Filialleiters (Standort Hannover-Mitte):
--- "Da Samstage 40% mehr Umsatz machen als Montage, brauche ich eine geglättete
+-- "Da Samstage rund 70 % mehr Umsatz machen als Montage, brauche ich eine geglättete
 --  Trendlinie (Rolling 7-Day Average) für die Personal- und Frischeplanung."
 -- =====================================================================================
 WITH Tagesumsatz AS (

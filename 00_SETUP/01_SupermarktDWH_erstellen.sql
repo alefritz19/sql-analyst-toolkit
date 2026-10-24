@@ -358,7 +358,9 @@ GO
 
 -- Preishistorie (SCD Typ 2): Verkaufspreis brutto und Einstandspreis netto je Gültigkeitszeitraum.
 -- Eingebautes Muster: 2026 steigen die Einkaufspreise bei Molkereiprodukten (+9 %) deutlich stärker
--- als die Verkaufspreise (+2,5 %) → Margendruck in der Kategorie.
+-- als die Verkaufspreise → Margendruck in der Kategorie.
+-- Hinweis zum Nominalfaktor 1,025: durch die Preisendung (FLOOR auf 10 Cent + 0,09) liegt die
+-- tatsächliche Verkaufspreiserhöhung höher, im Mittel bei etwa +6,6 %.
 CREATE TABLE dbo.Preishistorie (
     ProduktID     INT            NOT NULL REFERENCES dbo.Produkte (ProduktID),
     GueltigAb     DATE           NOT NULL,
@@ -599,7 +601,9 @@ PRINT N'[5/10] Kassenbons erzeugen';
 
 -- Öffnungstage je Filiale mit erwarteter Bonanzahl
 -- Eingebaute Muster: Wochentag, Monat/Weihnachten, Brückentage vor Feiertagen, Wachstum +3 % p. a.,
--- Neueröffnung Bielefeld (Anlaufkurve), Wettbewerber-Eröffnung in Braunschweig ab 06/2025 (−16 %)
+-- Neueröffnung Bielefeld (Anlaufkurve), Wettbewerber-Eröffnung in Braunschweig ab 06/2025
+-- (Faktor 0,84 auf die erwartete Bonanzahl; im Ergebnis ca. −14 % Bons und −11 % Umsatz,
+--  weil Wachstum und Saisonalität gegenläufig wirken)
 SELECT d.Datum, d.DatumKey, d.WochentagNr, d.MonatNr, f.FilialeID,
        Anzahl = CAST(ROUND(
                 p.Basis
@@ -778,8 +782,8 @@ FROM MitAktion m
 JOIN dbo.Preishistorie ph ON ph.ProduktID = m.ProduktID AND m.BonDatum BETWEEN ph.GueltigAb AND ph.GueltigBis;
 GO
 
--- Spaltenreihenfolge im INSERT oben: PositionID, PosNr, BonID … → korrigieren wir hier sauber über die Spaltenliste
--- (siehe Plausibilitätsprüfung am Ende: PosNr muss je Bon bei 1 beginnen)
+-- Hinweis: Die Spaltenliste im INSERT oben legt die Zuordnung fest (PositionID, BonID, PosNr, …),
+-- nicht die Reihenfolge im SELECT. Die Plausibilitätsprüfung am Ende verifiziert, dass PosNr je Bon bei 1 beginnt.
 /* =====================================================================================
    [7/10] Abschreibungen & Verderb (MHD-Verluste, Bruch, Diebstahl)
    ===================================================================================== */

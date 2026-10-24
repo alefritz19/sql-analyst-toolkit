@@ -1,5 +1,5 @@
 -- =====================================================================================
--- SQL ANALYST TOOLKIT | MODUL 15: ADVANCED ANALYTICS (RFM & KOHORTEN)
+-- SQL ANALYST TOOLKIT | MODUL 03: ADVANCED ANALYTICS (RFM & KOHORTEN)
 -- -------------------------------------------------------------------------------------
 -- Datenbank : SupermarktDWH (FrischMarkt GmbH)
 -- Ziel      : Enterprise-Analytik für Kundenwert, Loyalität und Kohorten-Retention

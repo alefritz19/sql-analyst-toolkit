@@ -9,5 +9,7 @@ WITH Sales AS (
 SELECT
     OrderDate,
     Amount,
-    SUM(Amount) OVER (ORDER BY OrderDate) AS RunningTotal
+    -- ROWS ... CURRENT ROW statt des Standardrahmens RANGE: bei mehreren Zeilen mit
+    -- gleichem Datum bekäme sonst jede davon dieselbe Summe
+    SUM(Amount) OVER (ORDER BY OrderDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS RunningTotal
 FROM Sales;
