@@ -1,4 +1,4 @@
-﻿-- Erstbestellung & Kundenaktivität (First Order Date)
+﻿-- Erstbestellung & Kundenaktivität
 
 WITH Orders AS (
     SELECT 101 AS OrderID, 1 AS CustomerID, CAST('2026-01-15' AS DATE) AS OrderDate UNION ALL

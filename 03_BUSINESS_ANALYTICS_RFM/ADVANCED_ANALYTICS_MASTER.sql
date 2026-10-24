@@ -1,8 +1,8 @@
 -- =====================================================================================
--- SQL ANALYST TOOLKIT | MODUL 03: ADVANCED ANALYTICS (RFM & KOHORTEN)
+-- SQL ANALYST TOOLKIT | MODUL 03: FORTGESCHRITTENE ANALYSEN (RFM & KOHORTEN)
 -- -------------------------------------------------------------------------------------
 -- Datenbank : SupermarktDWH (FrischMarkt GmbH)
--- Ziel      : Enterprise-Analytik für Kundenwert, Loyalität und Kohorten-Retention
+-- Ziel      : Auswertungen zu Kundenwert, Loyalität und Kundenbindung (Kohorten)
 --             anhand von echten Transaktionsmustern.
 -- =====================================================================================
 
@@ -10,7 +10,7 @@ USE SupermarktDWH;
 GO
 
 -- =====================================================================================
--- 1. BUSINESS CASE: RFM-Kundensegmentierung (Recency, Frequency, Monetary)
+-- 1. ANWENDUNGSFALL: RFM-Kundensegmentierung (Recency, Frequency, Monetary)
 -- -------------------------------------------------------------------------------------
 -- Frage des Marketingleiters:
 -- "Welche Kundenkarten-Inhaber sind unsere treuesten Champions und welche
@@ -73,7 +73,7 @@ ORDER BY DurchschnUmsatzEUR DESC;
 GO
 
 -- =====================================================================================
--- 2. BUSINESS CASE: Monatliche Kohorten-Retention-Matrix (Kundenbindung)
+-- 2. ANWENDUNGSFALL: Monatliche Kohortenmatrix zur Kundenbindung
 -- -------------------------------------------------------------------------------------
 -- Frage der Geschäftsführung:
 -- "Wie viel Prozent der Neukunden eines Registrierungsmonats kaufen in den 
@@ -112,7 +112,7 @@ SELECT
     COUNT(DISTINCT CASE WHEN a.MonatsIndex = 2 THEN a.KundeID END) AS M2,
     COUNT(DISTINCT CASE WHEN a.MonatsIndex = 3 THEN a.KundeID END) AS M3,
     COUNT(DISTINCT CASE WHEN a.MonatsIndex = 6 THEN a.KundeID END) AS M6,
-    -- Retention Rate für Monat 1 (% der Kohorte, die im Folgemonat wiederkommt)
+    -- Wiederkaufrate für Monat 1 (% der Kohorte, die im Folgemonat wiederkommt)
     CAST(
         COUNT(DISTINCT CASE WHEN a.MonatsIndex = 1 THEN a.KundeID END) * 100.0 / 
         NULLIF(g.KohortenStartGroesse, 0)

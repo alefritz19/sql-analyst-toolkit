@@ -1,11 +1,11 @@
 ﻿/*
 ================================================================================
-POWER BI OPTIMIERTE T-SQL VIEW / DATASET QUERY
-Sternschema (Star Schema) Fact Table mit optimierten Datentypen.
+FÜR POWER BI OPTIMIERTE T-SQL-ABFRAGE
+Faktentabelle im Sternschema mit optimierten Datentypen.
 ================================================================================
 */
 
--- Best Practice für Power BI DirectQuery / Import:
+-- Bewährte Praxis für Power BI (DirectQuery / Import):
 -- Keine SELECT * verwenden, Spaltentypen sauber casten, NULLs vermeiden.
 WITH RawSales AS (
     SELECT 

@@ -1,5 +1,5 @@
 -- =====================================================================================
--- SQL ANALYST TOOLKIT | MODUL 01: DATA CLEANING & QUALITY AUDITING
+-- SQL ANALYST TOOLKIT | MODUL 01: DATENBEREINIGUNG & QUALITÄTSPRÜFUNG
 -- -------------------------------------------------------------------------------------
 -- Datenbank : SupermarktDWH (FrischMarkt GmbH)
 -- Tabelle   : stg.Kunden_Rohimport
@@ -28,7 +28,7 @@ ORDER BY RohID;
 GO
 
 -- =====================================================================================
--- 2. BEREINIGUNG & HARMONISIERUNG (In-Flight Cleaning via CTE)
+-- 2. BEREINIGUNG & HARMONISIERUNG (Bereinigung beim Lesen über eine CTE)
 -- =====================================================================================
 WITH Bereinigt AS (
     SELECT 

@@ -1,4 +1,4 @@
-﻿-- Laufende Summe (Running Total) mit SUM() OVER()
+﻿-- Laufende Summe mit SUM() OVER()
 
 WITH DailyRevenue AS (
     SELECT CAST('2026-03-01' AS DATE) AS DayDate, 500 AS Revenue UNION ALL

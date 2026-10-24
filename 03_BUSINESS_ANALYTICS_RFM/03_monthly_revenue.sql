@@ -1,4 +1,4 @@
-﻿-- Monatlicher Umsatz & Wachstumsrate (MoM Growth)
+﻿-- Monatlicher Umsatz & Wachstum gegenüber dem Vormonat
 
 WITH Sales AS (
     SELECT CAST('2026-01-10' AS DATE) AS OrderDate, 12000.0 AS Amount UNION ALL

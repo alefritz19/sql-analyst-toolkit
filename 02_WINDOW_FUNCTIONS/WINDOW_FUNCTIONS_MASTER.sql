@@ -1,5 +1,5 @@
 -- =====================================================================================
--- SQL ANALYST TOOLKIT | MODUL 02: WINDOW FUNCTIONS (FENSTERFUNKTIONEN)
+-- SQL ANALYST TOOLKIT | MODUL 02: FENSTERFUNKTIONEN (WINDOW FUNCTIONS)
 -- -------------------------------------------------------------------------------------
 -- Datenbank : SupermarktDWH (FrischMarkt GmbH)
 -- Ziel      : Beherrschung von ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTILE sowie
@@ -10,7 +10,7 @@ USE SupermarktDWH;
 GO
 
 -- =====================================================================================
--- 1. BUSINESS CASE: Die 3 umsatzstärksten Artikel je Warengruppe (DENSE_RANK)
+-- 1. ANWENDUNGSFALL: Die 3 umsatzstärksten Artikel je Warengruppe (DENSE_RANK)
 -- -------------------------------------------------------------------------------------
 -- Frage des Category Managers:
 -- "Welche 3 Top-Seller treiben in jeder einzelnen Warengruppe den Umsatz an?"
@@ -45,7 +45,7 @@ ORDER BY KategorieName, RangInKategorie;
 GO
 
 -- =====================================================================================
--- 2. BUSINESS CASE: Month-over-Month (MoM) Umsatzwachstum mit LAG()
+-- 2. ANWENDUNGSFALL: Umsatzwachstum gegenüber dem Vormonat mit LAG()
 -- -------------------------------------------------------------------------------------
 -- Frage der Geschäftsführung:
 -- "Wie entwickelt sich der monatliche Gesamtumsatz im Vergleich zum Vormonat und
@@ -94,11 +94,11 @@ ORDER BY JahrMonat;
 GO
 
 -- =====================================================================================
--- 3. BUSINESS CASE: Gleitender 7-Tage-Durchschnitt zur Glättung von Wochentagseffekten
+-- 3. ANWENDUNGSFALL: Gleitender 7-Tage-Durchschnitt zur Glättung von Wochentagseffekten
 -- -------------------------------------------------------------------------------------
 -- Frage des Filialleiters (Standort Hannover-Mitte):
 -- "Da Samstage rund 70 % mehr Umsatz machen als Montage, brauche ich eine geglättete
---  Trendlinie (Rolling 7-Day Average) für die Personal- und Frischeplanung."
+--  Trendlinie über 7 Tage für die Personal- und Frischeplanung."
 -- =====================================================================================
 WITH Tagesumsatz AS (
     SELECT 

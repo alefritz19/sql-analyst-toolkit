@@ -1,4 +1,4 @@
-﻿-- Laufender Umsatz (Cumulative Running Total)
+﻿-- Laufende Umsatzsumme (kumuliert)
 
 WITH Sales AS (
     SELECT CAST('2026-01-01' AS DATE) AS OrderDate, 1500.0 AS Amount UNION ALL

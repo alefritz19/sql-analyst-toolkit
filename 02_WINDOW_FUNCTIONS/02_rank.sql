@@ -1,4 +1,4 @@
-﻿-- RANK() vs. DENSE_RANK() - Rangfolgebildung bei gleichen Werten
+﻿-- RANK() vs. DENSE_RANK() - Rangfolge bei gleichen Werten
 
 WITH Employees AS (
     SELECT 1 AS EmployeeID, 92000 AS Salary UNION ALL

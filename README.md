@@ -1,17 +1,17 @@
-# 🗄️ SQL Analyst Toolkit & Production Business Intelligence Hub
-### Praxisorientierte T-SQL Referenzarchitektur & Enterprise Analytics auf Microsoft SQL Server 2022
+# 🗄️ SQL Analyst Toolkit: T-SQL-Bibliothek für Business Intelligence & Analysen
+### Praxisorientierte T-SQL-Referenz und Auswertungen auf Microsoft SQL Server 2022
 ### Datengrundlage: FrischMarkt GmbH (`SupermarktDWH`) · 5 Filialen · 120 Artikel · ~755.000 Positionen
 
-[![SQL Server](https://img.shields.io/badge/SQL_Server-2022_Enterprise_Ready-CC292B?logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC292B?logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
 [![T-SQL](https://img.shields.io/badge/Language-T--SQL-0078D4)](https://learn.microsoft.com/sql/t-sql/)
-[![DWH Star Schema](https://img.shields.io/badge/Schema-Kimball_Star_Schema-success)](#)
-[![Business Analytics](https://img.shields.io/badge/Focus-Retail_KPIs_%26_Retention-orange)](#)
+[![Sternschema](https://img.shields.io/badge/Modell-Kimball_Sternschema-success)](#)
+[![Schwerpunkt](https://img.shields.io/badge/Schwerpunkt-Handels_KPIs_%26_Kundenbindung-orange)](#)
 
 ---
 
 ## 📌 Übersicht: Wofür dieses Repository steht
 
-Dieses Repository ist **keine lose Ansammlung theoretischer Syntax-Snippets**, sondern ein **zusammenhängendes technisches Werkzeug für Business Intelligence & Data Analytics**. 
+Dieses Repository ist **keine lose Sammlung theoretischer Syntaxbeispiele**, sondern ein **zusammenhängendes Werkzeug für Business Intelligence und Datenanalyse**. 
 
 Alle Kernmodule basieren auf einer gemeinsamen, realistischen Unternehmensdatenbank: der **FrischMarkt GmbH (`SupermarktDWH`)**. Vom deterministischen Setup über Datenbereinigung bis hin zu komplexen Fensterfunktionen und Kundenwert-Modellen (RFM & Kohorten) wird eine konsistente geschäftliche Geschichte erzählt.
 
@@ -23,8 +23,8 @@ Alle Kernmodule basieren auf einer gemeinsamen, realistischen Unternehmensdatenb
 sql-analyst-toolkit/
 ├── 00_SETUP/                                          # Deterministischer DWH-Datengenerator
 ├── 01_DATA_CLEANING/                                  # Datenbereinigung, Auditierung & Deduplizierung
-├── 02_WINDOW_FUNCTIONS/                               # Fensterfunktionen: DENSE_RANK, LAG, Moving Averages
-├── 03_BUSINESS_ANALYTICS_RFM/                         # RFM-Segmentierung & Monatliche Kohorten-Retention
+├── 02_WINDOW_FUNCTIONS/                               # Fensterfunktionen: DENSE_RANK, LAG, gleitende Durchschnitte
+├── 03_BUSINESS_ANALYTICS_RFM/                         # RFM-Segmentierung & monatliche Kohortenanalyse
 └── 90_TSQL_Syntax_Reference/                          # Umfassende Syntax-Bibliothek (CTEs, PIVOT, JSON etc.)
 ```
 
@@ -32,28 +32,28 @@ sql-analyst-toolkit/
 
 ### 1. Datenbereinigung & Qualitätssicherung (`01_DATA_CLEANING`)
 * **[`DATA_CLEANING_MASTER.sql`](01_DATA_CLEANING/DATA_CLEANING_MASTER.sql):**
-  * Whitespace-Bereinigung (`TRIM`, verschachtelte `REPLACE`).
+  * Bereinigung von Leerzeichen (`TRIM`, verschachtelte `REPLACE`).
   * Sichere Datumskonvertierung via `TRY_CONVERT` (Harmonisierung von ISO-, DE- und US-Formaten).
   * Syntaktische Prüfung und Korrektur von E-Mail-Adressen.
-  * In-Flight-Deduplizierung über `ROW_NUMBER() PARTITION BY SaubererKundenCode ORDER BY RohID DESC`.
+  * Deduplizierung beim Laden über `ROW_NUMBER() PARTITION BY SaubererKundenCode ORDER BY RohID DESC`.
 
 ---
 
 ### 2. Fortgeschrittene Fensterfunktionen (`02_WINDOW_FUNCTIONS`)
 * **[`WINDOW_FUNCTIONS_MASTER.sql`](02_WINDOW_FUNCTIONS/WINDOW_FUNCTIONS_MASTER.sql):**
   * `DENSE_RANK() OVER (PARTITION BY KategorieID ORDER BY Umsatz DESC)` für Top-Seller je Sortiment.
-  * `LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat)` zur Berechnung des Month-over-Month (MoM) Wachstums in Euro und Prozent.
+  * `LAG(UmsatzAktuell, 1) OVER (ORDER BY JahrMonat)` zur Berechnung des Wachstums gegenüber dem Vormonat in Euro und Prozent.
   * Gleitender 7-Tage-Durchschnitt (`AVG() OVER (ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`) zur Glättung starker Wochentagsschwankungen (Samstagsspitzen).
-  * Monats-Running-Total (`SUM() OVER (PARTITION BY Monat ORDER BY Datum)`).
+  * Kumulierter Monatsumsatz (`SUM() OVER (PARTITION BY Monat ORDER BY Datum)`).
 
 ---
 
-### 3. Business Analytics, Retention & RFM (`03_BUSINESS_ANALYTICS_RFM`)
+### 3. Kundenanalysen: RFM & Kundenbindung (`03_BUSINESS_ANALYTICS_RFM`)
 * **[`ADVANCED_ANALYTICS_MASTER.sql`](03_BUSINESS_ANALYTICS_RFM/ADVANCED_ANALYTICS_MASTER.sql):**
   * **RFM-Kundensegmentierung:** Quantil-Einteilung über `NTILE(5)` für Recency (Tage seit Kauf), Frequency (Einkaufszahl) und Monetary (Gesamtumsatz) in *Champions*, *Loyale Kunden*, *Gefährdete Kunden* und *Inaktive*.
-  * **Monatliche Kohortenanalyse (Retention Matrix):** Dynamische Ermittlung des Ersteinkaufs-Monats und Berechnung der Wiederkehrrate für Folgemonate M+1, M+2, M+3, M+6.
+  * **Monatliche Kohortenanalyse (Kundenbindungsmatrix):** Dynamische Ermittlung des Ersteinkaufs-Monats und Berechnung der Wiederkaufrate für die Folgemonate M+1, M+2, M+3 und M+6.
 
-#### 📊 Beispiel-Output: RFM-Kundensegmentierung (`SupermarktDWH`)
+#### 📊 Beispielausgabe: RFM-Kundensegmentierung (`SupermarktDWH`)
 
 Die folgende Auswertung zeigt das tatsächliche Ergebnis der RFM-Segmentierung über den 3-Jahres-Bestand:
 
